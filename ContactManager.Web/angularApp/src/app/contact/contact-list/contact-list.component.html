@@ -1,0 +1,35 @@
+<div class="row">
+    <div class="col-md-2">
+        <button type="button" class="btn btn-primary" (click)="createContact()">Create Contact</button>
+    </div>
+    <div class="col-md-offset-8 col-md-2">
+        <input type="text" placeholder="Search" appAutosearch (gotSearchResults)="handleSearchResults($event)" class="form-control"/>
+    </div>
+</div>
+
+<br>
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Contact Full Name</th>
+                    <th>Email Addresses</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let contact of contacts" (dblclick)="editContact(contact)">
+                    <td>{{contact.firstName}} {{contact.lastName}}</td>
+                    <td>
+                        <div *ngFor="let email of contact.emailAddresses">
+                            {{email.address}} ({{email.type === 0 ? 'Personal' : 'Business'}})
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<app-contact-create-update [contact]="selectedContact" (successEvent)="getAllContacts()"></app-contact-create-update>
