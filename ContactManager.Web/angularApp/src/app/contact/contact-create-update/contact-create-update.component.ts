@@ -4,6 +4,7 @@ import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms'
 import { Contact } from './../../_interfaces/contact.model';
 import {ErrorHandlerService} from './../../shared/services/error-handler.service';
 import { ContactService } from './../../shared/services/contact.service';
+import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-contact-create-update',
@@ -15,6 +16,9 @@ export class ContactCreateUpdateComponent implements OnInit {
   public contactForm: FormGroup;
   @Output() public successEvent = new EventEmitter();
   @Input() contact: Contact;
+
+  faMinus = faMinus;
+  faPlus = faPlus;
 
   constructor(private contactService: ContactService, private errorHandler: ErrorHandlerService, private fb: FormBuilder) { }
 

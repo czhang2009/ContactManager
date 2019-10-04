@@ -30,7 +30,8 @@ namespace ContactManager.Repository
 
         public IEnumerable<Contact> Search(string text)
         {
-            return FindByCondition(contact => contact.FirstName.Contains(text) || contact.LastName.Contains(text))
+            return FindByCondition(contact => contact.FirstName.Contains(text) || contact.LastName.Contains(text)
+            || contact.EmailAddresses.Exists(e => e.Address.Contains(text)))
             .Include(contact => contact.EmailAddresses)
             .OrderBy(o => o.FirstName).ToList();
         }
