@@ -7,15 +7,16 @@ import { ContactService } from './../../shared/services/contact.service';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
-  selector: 'app-contact-create-update',
-  templateUrl: './contact-create-update.component.html',
-  styleUrls: ['./contact-create-update.component.css']
+  selector: 'app-contact-upsert',
+  templateUrl: './contact-upsert.component.html',
+  styleUrls: ['./contact-upsert.component.css']
 })
-export class ContactCreateUpdateComponent implements OnInit {
+export class ContactUpsertComponent implements OnInit {
   public errorMessage: string;
   public contactForm: FormGroup;
   @Output() public successEvent = new EventEmitter();
   @Input() contact: Contact;
+  emailAddresses: EmailAddress[];
 
   faMinus = faMinus;
   faPlus = faPlus;
@@ -36,6 +37,8 @@ export class ContactCreateUpdateComponent implements OnInit {
     if(this.contactForm){
       this.contactForm.get('firstName').setValue(this.contact.firstName.slice());
       this.contactForm.get('lastName').setValue(this.contact.lastName.slice());
+
+      this.emailAddresses = this.contact.emailAddresses.slice();
     }
   }
 
@@ -57,24 +60,32 @@ export class ContactCreateUpdateComponent implements OnInit {
 
   public onSuccess(){
     this.successEvent.emit();
-    this.contactForm.reset();
+    this.resetForm();
   }
 
-  public addEmailAddress(emailType: number, emailAddress: string){
-    this.contact.emailAddresses.push({
+  public addEmailAddress(emailType: string, emailAddress: string){
+    this.emailAddresses.push({
       id: 0,
-      type: emailType,
+      type: parseInt(emailType),
       address: emailAddress,
       contactId: this.contact.id
-    })
+    });
+
+    this.contactForm.get('emailType').setValue('');
+    this.contactForm.get('newEmailAddress').setValue('');
   }
 
   public removeEmailAddress(emailAddress: EmailAddress){
-    let index = this.contact.emailAddresses.findIndex(email => email.id === emailAddress.id && email.type === emailAddress.type && email.address === emailAddress.address);
+    let index = this.emailAddresses.findIndex(email => email.id === emailAddress.id && email.type === emailAddress.type && email.address === emailAddress.address);
 
     if(index !== -1){
-      this.contact.emailAddresses.splice(index, 1);
+      this.emailAddresses.splice(index, 1);
     }
+  }
+
+  public resetForm(){
+    this.contactForm.reset();
+    this.emailAddresses = this.contact.emailAddresses.slice();
   }
 
   public createUpdateContact(contactFormValue) {
@@ -84,6 +95,7 @@ export class ContactCreateUpdateComponent implements OnInit {
       if (this.contact && this.contact.id > 0) {
         this.contact.firstName = contactFormValue.firstName;
         this.contact.lastName = contactFormValue.lastName;
+        this.contact.emailAddresses = this.emailAddresses;
 
         this.contactService.update(`${apiUrl}/${this.contact.id}`, this.contact)
         .subscribe(

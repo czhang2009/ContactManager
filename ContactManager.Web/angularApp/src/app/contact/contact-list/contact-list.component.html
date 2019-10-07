@@ -32,4 +32,6 @@
     </div>
 </div>
 
-<app-contact-create-update [contact]="selectedContact" (successEvent)="getAllContacts()"></app-contact-create-update>
+<app-my-modal modalTitle="Create/Update Contact">
+    <app-contact-upsert [contact]="selectedContact" (successEvent)="getAllContacts()"></app-contact-upsert>
+</app-my-modal>

@@ -5,12 +5,12 @@ import { SharedModule } from '../shared/shared.module';
 import { ReactiveFormsModule} from '@angular/forms';
 
 import { ContactListComponent } from './contact-list/contact-list.component';
-import { ContactCreateUpdateComponent } from './contact-create-update/contact-create-update.component';
+import { ContactUpsertComponent } from './contact-upsert/contact-upsert.component';
 
 
 
 @NgModule({
-  declarations: [ContactListComponent, ContactCreateUpdateComponent],
+  declarations: [ContactListComponent, ContactUpsertComponent],
   imports: [
     CommonModule,
     SharedModule,

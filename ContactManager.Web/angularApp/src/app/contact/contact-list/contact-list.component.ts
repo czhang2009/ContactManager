@@ -41,12 +41,12 @@ export class ContactListComponent implements OnInit {
       emailAddresses: []
     };
 
-    $('#createUpdateContactModal').modal();
+    $('#myModal').modal();
   }
 
   editContact(contact: Contact){
     this.selectedContact = contact;
-    $('#createUpdateContactModal').modal();
+    $('#myModal').modal();
   }
 
 }
