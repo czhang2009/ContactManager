@@ -66,15 +66,17 @@ export class ContactUpsertComponent implements OnInit, OnChanges {
   }
 
   public addEmailAddress(emailType: string, emailAddress: string) {
-    this.emailAddresses.push({
-      id: 0,
-      type: +emailType,
-      address: emailAddress,
-      contactId: this.contact.id
-    });
+    if (emailType && emailAddress.trim()) {
+      this.emailAddresses.push({
+        id: 0,
+        type: +emailType,
+        address: emailAddress,
+        contactId: this.contact.id
+      });
 
-    this.contactForm.get('emailType').setValue('');
-    this.contactForm.get('newEmailAddress').setValue('');
+      this.contactForm.get('emailType').setValue('');
+      this.contactForm.get('newEmailAddress').setValue('');
+    }
   }
 
   public removeEmailAddress(emailAddress: EmailAddress){
@@ -97,7 +99,7 @@ export class ContactUpsertComponent implements OnInit, OnChanges {
     const apiUrl = 'api/contact';
 
     if ( this.contactForm.valid) {
-      if(contactFormValue.newEmailAddress) {
+      if(contactFormValue.newEmailAddress && (contactFormValue.newEmailAddress as string).trim()) {
         this.addEmailAddress(contactFormValue.emailType, contactFormValue.newEmailAddress);
       }
 
