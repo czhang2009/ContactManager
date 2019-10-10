@@ -1,9 +1,9 @@
-import { EmailAddress } from './../../_interfaces/email-address.model';
-import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Contact } from './../../_interfaces/contact.model';
 import {ErrorHandlerService} from './../../shared/services/error-handler.service';
 import { ContactService } from './../../shared/services/contact.service';
+import { EmailAddress } from './../../_interfaces/email-address.model';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -11,7 +11,7 @@ import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './contact-upsert.component.html',
   styleUrls: ['./contact-upsert.component.css']
 })
-export class ContactUpsertComponent implements OnInit {
+export class ContactUpsertComponent implements OnInit, OnChanges {
   public errorMessage: string;
   public contactForm: FormGroup;
   @Output() public successEvent = new EventEmitter();
@@ -30,13 +30,12 @@ export class ContactUpsertComponent implements OnInit {
       emailType: new FormControl(''),
       newEmailAddress: new FormControl(''),
     });
-    
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if(this.contactForm){
-      this.contactForm.get('firstName').setValue(this.contact.firstName.slice());
-      this.contactForm.get('lastName').setValue(this.contact.lastName.slice());
+    if (this.contactForm) {
+      this.contactForm.get('firstName').setValue(this.contact.firstName);
+      this.contactForm.get('lastName').setValue(this.contact.lastName);
 
       this.emailAddresses = this.contact.emailAddresses.slice();
     }
@@ -58,15 +57,18 @@ export class ContactUpsertComponent implements OnInit {
     return false;
   }
 
-  public onSuccess(){
+  public onSuccess() {
     this.successEvent.emit();
+  }
+
+  public onClose() {
     this.resetForm();
   }
 
-  public addEmailAddress(emailType: string, emailAddress: string){
+  public addEmailAddress(emailType: string, emailAddress: string) {
     this.emailAddresses.push({
       id: 0,
-      type: parseInt(emailType),
+      type: +emailType,
       address: emailAddress,
       contactId: this.contact.id
     });
@@ -76,15 +78,18 @@ export class ContactUpsertComponent implements OnInit {
   }
 
   public removeEmailAddress(emailAddress: EmailAddress){
-    let index = this.emailAddresses.findIndex(email => email.id === emailAddress.id && email.type === emailAddress.type && email.address === emailAddress.address);
+    const index = this.emailAddresses.findIndex(email => email.id === emailAddress.id && email.type === emailAddress.type && email.address === emailAddress.address);
 
-    if(index !== -1){
+    if (index !== -1) {
       this.emailAddresses.splice(index, 1);
     }
   }
 
-  public resetForm(){
-    this.contactForm.reset();
+  public resetForm() {
+    this.contactForm.reset({
+      firstName: this.contact.firstName,
+      lastName: this.contact.lastName,
+    });
     this.emailAddresses = this.contact.emailAddresses.slice();
   }
 
@@ -92,11 +97,15 @@ export class ContactUpsertComponent implements OnInit {
     const apiUrl = 'api/contact';
 
     if ( this.contactForm.valid) {
-      if (this.contact && this.contact.id > 0) {
-        this.contact.firstName = contactFormValue.firstName;
-        this.contact.lastName = contactFormValue.lastName;
-        this.contact.emailAddresses = this.emailAddresses;
+      if(contactFormValue.newEmailAddress) {
+        this.addEmailAddress(contactFormValue.emailType, contactFormValue.newEmailAddress);
+      }
 
+      this.contact.firstName = contactFormValue.firstName;
+      this.contact.lastName = contactFormValue.lastName;
+      this.contact.emailAddresses = this.emailAddresses;
+
+      if (this.contact.id > 0) {
         this.contactService.update(`${apiUrl}/${this.contact.id}`, this.contact)
         .subscribe(
           res => $('#successModal').modal(),
@@ -105,9 +114,6 @@ export class ContactUpsertComponent implements OnInit {
             this.errorMessage = this.errorHandler.errorMessage;
         } );
       } else {
-        this.contact.firstName = contactFormValue.firstName;
-        this.contact.lastName = contactFormValue.lastName;
-
         this.contactService.create(apiUrl, this.contact)
         .subscribe(
           res => $('#successModal').modal(),

@@ -19,7 +19,7 @@ export class ContactListComponent implements OnInit {
     this.getAllContacts();
   }
 
-  public getAllContacts(){
+  public getAllContacts() {
     let apiUrl = `api/contact`;
     this.contactService.getData(apiUrl).subscribe(
       res => this.contacts = res as Contact[],
@@ -29,11 +29,11 @@ export class ContactListComponent implements OnInit {
     );
   }
 
-  public handleSearchResults(contacts: any){
+  public handleSearchResults(contacts: any) {
     this.contacts = contacts as Contact[];
   }
 
-  createContact(){
+  createContact() {
     this.selectedContact = {
       id: 0,
       firstName: '',
@@ -44,9 +44,8 @@ export class ContactListComponent implements OnInit {
     $('#myModal').modal();
   }
 
-  editContact(contact: Contact){
+  editContact(contact: Contact) {
     this.selectedContact = contact;
     $('#myModal').modal();
   }
-
 }
